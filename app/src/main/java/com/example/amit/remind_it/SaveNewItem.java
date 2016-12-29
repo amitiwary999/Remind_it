@@ -88,7 +88,7 @@ public class SaveNewItem extends AppCompatActivity {
             if (photoFile != null) {
                 Log.d("SL","I am here");
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.betterclever.smartlocator.fileprovider",
+                        "com.example.amit.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);

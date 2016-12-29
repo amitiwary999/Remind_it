@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity
         if (!Prefs.with(this).getPreLoad()) {
             //  setRealmData();
         }
-        
+
         RealmController.with(this).refresh();
         // get all persisted objects
         // create the helper adapter and notify data set changes
