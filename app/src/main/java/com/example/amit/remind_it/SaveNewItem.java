@@ -48,8 +48,7 @@ public class SaveNewItem extends AppCompatActivity {
     static final int REQUEST_TAKE_PHOTO = 1;
     ArrayList<String> list;
     private static final String TAG = SaveNewItem.class.getSimpleName();
-    private final ClarifaiClient client = new ClarifaiClient("QwyVMelyYYyB57bUcmAj5pNJ8DFbF2vX_otHSwP1",
-            "uTvXRCBEaenYGwAbae56BIcxavMduS6TtJHMnYCZ");
+   
     private File createImageFile() throws IOException {
         // Create an image file name
         Log.d("Remind","I am here");
@@ -141,6 +140,7 @@ public class SaveNewItem extends AppCompatActivity {
                 toast.show();
 
                 startActivity(new Intent(getBaseContext(),MainActivity.class));
+                finish();
             }
         });
 
@@ -163,44 +163,10 @@ public class SaveNewItem extends AppCompatActivity {
         itemImageView.setImageBitmap(myBitmap);
         itemImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
-      /*  new AsyncTask<Bitmap, Void, RecognitionResult>() {
 
-            @Override protected RecognitionResult doInBackground(Bitmap... bitmaps) {
-                return recognizeBitmap(myBitmap);
-            }
-            @Override protected void onPostExecute(RecognitionResult result) {
-
-                if(result!=null){
-                    if(result.getStatusCode()== RecognitionResult.StatusCode.OK){
-                        for(Tag tag : result.getTags()){
-                            list.add(tag.getName());
-                            Log.d("Recognised Tag",tag.getName() + " " + tag.getProbability());
-                        }
-                    }
-                }
-            }
-        }.execute(myBitmap);*/
     }
 
-    private RecognitionResult recognizeBitmap(Bitmap bitmap) {
-        try {
-            // Scale down the image. This step is optional. However, sending large images over the
-            // network is slow and  does not significantly improve recognition performance.
-            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 320,
-                    320 * bitmap.getHeight() / bitmap.getWidth(), true);
 
-            // Compress the image as a JPEG.
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            scaled.compress(Bitmap.CompressFormat.JPEG, 90, out);
-            byte[] jpeg = out.toByteArray();
-
-            // Send the JPEG to Clarifai and return the result.
-            return client.recognize(new RecognitionRequest(jpeg)).get(0);
-        } catch (ClarifaiException e) {
-            Log.e(TAG, "Clarifai error", e);
-            return null;
-        }
-    }
 
     public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
         int width = image.getWidth();
