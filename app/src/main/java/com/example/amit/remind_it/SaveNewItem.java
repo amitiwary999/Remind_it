@@ -1,15 +1,18 @@
 package com.example.amit.remind_it;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import com.clarifai.api.Tag;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,11 +20,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
-import com.clarifai.api.ClarifaiClient;
-import com.clarifai.api.RecognitionRequest;
-import com.clarifai.api.RecognitionResult;
-import com.clarifai.api.exception.ClarifaiException;
 import com.example.amit.remind_it.model.Items;
 import com.example.amit.remind_it.realm.RealmController;
 
@@ -105,29 +103,44 @@ public class SaveNewItem extends AppCompatActivity {
         locationEditText = (EditText) findViewById(R.id.location_edit_text);
 
         list = new ArrayList<>();
+        itemImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(Build.VERSION.SDK_INT<Build.VERSION_CODES.M) {
+                    dispatchTakePictureIntent();
+                }
+                else if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+                    if (ContextCompat.checkSelfPermission(SaveNewItem.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(SaveNewItem.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(SaveNewItem.this,
+                                new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 12345);
+                        return;
+                    }
 
-        dispatchTakePictureIntent();
+                }
+            }
+        });
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.M) {
+            dispatchTakePictureIntent();
+        }
+        else if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(SaveNewItem.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(SaveNewItem.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(SaveNewItem.this,
+                        new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 12345);
+                return;
+            }
+
+        }
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                String path = getFilesDir().getPath();
-                String databaseName = "myDb";
-                String password = "passw0rd";
-
-                //   WaspDb db = WaspFactory.openOrCreateDatabase(path,databaseName,password);
-                //   WaspHash itemsHash = db.openOrCreateHash("items");
-
                 Items item = new Items();
                 String name = nameEditText.getText().toString();
                 String location = locationEditText.getText().toString();
                 item.setId(RealmController.getInstance().getBooks().size() + 1);
                 item.setName(name);
                 item.setLocation(location);
-                item.setLatx("sample");
-                item.setLaty("sample");
                 item.setImgPath(mCurrentPhotoPath);
                 //  item.setTags(list);
                 realm.beginTransaction();
