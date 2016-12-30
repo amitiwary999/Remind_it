@@ -48,7 +48,7 @@ public class SaveNewItem extends AppCompatActivity {
     static final int REQUEST_TAKE_PHOTO = 1;
     ArrayList<String> list;
     private static final String TAG = SaveNewItem.class.getSimpleName();
-   
+
     private File createImageFile() throws IOException {
         // Create an image file name
         Log.d("Remind","I am here");
@@ -81,11 +81,11 @@ public class SaveNewItem extends AppCompatActivity {
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
-                Log.d("Smart Locator","Unable to create file");
+                Log.d("Remind_it","Unable to create file");
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Log.d("SL","I am here");
+                Log.d("Hi","I am here");
                 Uri photoURI = FileProvider.getUriForFile(this,
                         "com.example.amit.fileprovider",
                         photoFile);
