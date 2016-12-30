@@ -52,7 +52,7 @@ public class SaveNewItem extends AppCompatActivity {
             "uTvXRCBEaenYGwAbae56BIcxavMduS6TtJHMnYCZ");
     private File createImageFile() throws IOException {
         // Create an image file name
-        Log.d("Smart Locator","I am here");
+        Log.d("Remind","I am here");
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp;
 
@@ -156,11 +156,14 @@ public class SaveNewItem extends AppCompatActivity {
     private void setPic() {
 
         File imgFile = new File(mCurrentPhotoPath);
-        final Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_4444;
+         Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(),options);
+        myBitmap = getResizedBitmap(myBitmap, 100);
         itemImageView.setImageBitmap(myBitmap);
         itemImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
-        new AsyncTask<Bitmap, Void, RecognitionResult>() {
+      /*  new AsyncTask<Bitmap, Void, RecognitionResult>() {
 
             @Override protected RecognitionResult doInBackground(Bitmap... bitmaps) {
                 return recognizeBitmap(myBitmap);
@@ -176,7 +179,7 @@ public class SaveNewItem extends AppCompatActivity {
                     }
                 }
             }
-        }.execute(myBitmap);
+        }.execute(myBitmap);*/
     }
 
     private RecognitionResult recognizeBitmap(Bitmap bitmap) {
@@ -197,5 +200,20 @@ public class SaveNewItem extends AppCompatActivity {
             Log.e(TAG, "Clarifai error", e);
             return null;
         }
+    }
+
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 0) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 }
