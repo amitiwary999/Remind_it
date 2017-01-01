@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,7 +31,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     ItemsAdapter adaptEr;
     RecyclerView recyclerView;
-
+    SearchView searchView;
+    private String searchText=" ";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,11 +146,23 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
 
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                addDataToList(newText);
+                return false;
+            }
+        });
+      //  searchView.setQuery(searchText, false);
+        return true;
         //MenuItem item = menu.findItem(R.id.search);
         //searchView.setMenuItem(item);
-
-        return true;
 
     }
 
@@ -192,41 +206,17 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-   /* public void addDataToList(List<Item> data, String query){
-        String path = getFilesDir().getPath();
-        String databaseName = "myDb";
-        String password = "passw0rd";
-
-        WaspDb db = WaspFactory.openOrCreateDatabase(path,databaseName,password);
-        WaspHash itemsHash = db.openOrCreateHash("items");
-
+    public void addDataToList( String query){
+      //  String path = getFilesDir().getPath();
         if(query == null) {
-            List<Item> ld = itemsHash.getAllValues();
-            if (ld == null) {
-                Log.d("ld", "is null");
-            }
-            data.addAll(ld);
+            setRealmAdapter(RealmController.with(this).getBooks());
         }
         else {
-            List<Item> ld = itemsHash.getAllValues();
-            for(Item item:ld ){
-                if(item.getItemName().toLowerCase().contains(query.toLowerCase())){
-                    data.add(item);
-                }
-                else if(item.getLocation().toLowerCase().contains(query.toLowerCase())){
-                    data.add(item);
-                }
-                else {
-                    for(String s:item.getTags()){
-                        if(s.toLowerCase().contains(query.toLowerCase())){
-                            data.add(item);
-                            break;
-                        }
-                    }
-                }
-            }
+               setRealmAdapter(RealmController.with(this).queryedBooks(query));
+
         }
 
-    }*/
+    }
+
 
 }

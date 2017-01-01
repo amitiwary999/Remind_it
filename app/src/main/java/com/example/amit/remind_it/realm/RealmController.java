@@ -89,12 +89,12 @@ public class RealmController {
     }
 
     //query example
-    public RealmResults<Items> queryedBooks() {
+    public RealmResults<Items> queryedBooks(String flag) {
 
         return realm.where(Items.class)
-                .contains("author", "Author 0")
+                .contains("name", flag)
                 .or()
-                .contains("title", "Realm")
+                .contains("location", flag)
                 .findAll();
 
     }
