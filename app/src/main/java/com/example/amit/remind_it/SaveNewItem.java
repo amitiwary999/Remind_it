@@ -109,27 +109,28 @@ public class SaveNewItem extends AppCompatActivity {
                 if(Build.VERSION.SDK_INT<Build.VERSION_CODES.M) {
                     dispatchTakePictureIntent();
                 }
-                else if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+              /*  else if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
                     if (ContextCompat.checkSelfPermission(SaveNewItem.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(SaveNewItem.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(SaveNewItem.this,
                                 new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 12345);
                         return;
                     }
 
-                }
+                    dispatchTakePictureIntent();
+                }*/
             }
         });
         if(Build.VERSION.SDK_INT<Build.VERSION_CODES.M) {
             dispatchTakePictureIntent();
         }
-        else if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+      /*  else if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(SaveNewItem.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(SaveNewItem.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(SaveNewItem.this,
                         new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 12345);
                 return;
             }
-
-        }
+            dispatchTakePictureIntent();
+        }*/
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
