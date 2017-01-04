@@ -78,7 +78,10 @@ public class ItemsAdapter extends RealmRecyclerViewAdapter<Items> {
         final String imagePath = book.getImgPath();
         final ImageView imageView =  holdr.imageBackground;
         if(imgFile.exists()){
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_4444;
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(),options);
+            myBitmap = getResizedBitmap(myBitmap, 100);
             imageView.setImageBitmap(myBitmap);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         }
@@ -161,5 +164,19 @@ public class ItemsAdapter extends RealmRecyclerViewAdapter<Items> {
             textLocation = (TextView) itemView.findViewById(R.id.last_location);
             imageBackground = (ImageView) itemView.findViewById(R.id.item_image);
         }
+    }
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 0) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 }
