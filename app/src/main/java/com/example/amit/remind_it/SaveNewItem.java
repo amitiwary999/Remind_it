@@ -17,6 +17,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -65,7 +66,7 @@ public class SaveNewItem extends AppCompatActivity {
         Log.d("Photo Path","["+mCurrentPhotoPath+"]");
 
         if(image != null){
-            Log.d("SL","Image is not null");
+            Log.d("RI","Image is not null");
         }
         return image;
     }
@@ -132,7 +133,7 @@ public class SaveNewItem extends AppCompatActivity {
             dispatchTakePictureIntent();
         }
 
-        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
+        Button floatingActionButton = (Button) findViewById(R.id.buttondone);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
