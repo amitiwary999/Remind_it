@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.amit.remind_it.app.Prefs;
 import com.example.amit.remind_it.model.Items;
@@ -111,6 +112,12 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);*/
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(MainActivity.this,"check",Toast.LENGTH_LONG).show();
     }
 
     public void setRealmAdapter(RealmResults<Items> books) {
