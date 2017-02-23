@@ -89,8 +89,8 @@ public class ItemsAdapter extends RealmRecyclerViewAdapter<Items> {
             options.inPreferredConfig = Bitmap.Config.ARGB_4444;
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(),options);
             myBitmap = getResizedBitmap(myBitmap, 100);
-          //  Bitmap bitmap=compressImage(imgFile.getAbsolutePath());
-            imageView.setImageBitmap(myBitmap);
+            Bitmap bitmap=compressImage(imgFile.getAbsolutePath());
+            imageView.setImageBitmap(bitmap);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         }
         holdr.card.setOnLongClickListener(new View.OnLongClickListener() {
