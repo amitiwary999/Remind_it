@@ -158,7 +158,7 @@ public class SaveNewItem extends AppCompatActivity {
                 Toast toast = Toast.makeText(getApplicationContext(),"Item Saved Successfully!!",Toast.LENGTH_SHORT);
                 toast.show();
                  if(name!=null && location!=null) {
-                     startActivity(new Intent(getBaseContext(), MainActivity.class));
+                     startActivity(new Intent(SaveNewItem.this, MainActivity.class));
                      finish();
                  }else{
                      Toast.makeText(getApplicationContext(),"Enter name and location both",Toast.LENGTH_LONG).show();
