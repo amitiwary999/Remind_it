@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Toast.makeText(MainActivity.this,"check",Toast.LENGTH_LONG).show();
+       // Toast.makeText(MainActivity.this,"check",Toast.LENGTH_LONG).show();
     }
 
     public void setRealmAdapter(RealmResults<Items> books) {
