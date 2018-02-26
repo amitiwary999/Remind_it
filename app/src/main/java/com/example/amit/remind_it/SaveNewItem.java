@@ -102,7 +102,7 @@ public class SaveNewItem extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save_new_item);
-        this.realm = RealmController.with(this).getRealm();
+        this.realm = RealmController.with(getApplication()).getRealm();
         itemImageView = (ImageView) findViewById(R.id.item_image);
         nameEditText = (EditText) findViewById(R.id.name_edit_text);
         locationEditText = (EditText) findViewById(R.id.location_edit_text);

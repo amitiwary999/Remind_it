@@ -89,8 +89,8 @@ public class ItemsAdapter extends RealmRecyclerViewAdapter<Items> {
             options.inPreferredConfig = Bitmap.Config.ARGB_4444;
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(),options);
             myBitmap = getResizedBitmap(myBitmap, 100);
-            Bitmap bitmap=compressImage(imgFile.getAbsolutePath());
-            imageView.setImageBitmap(bitmap);
+            //Bitmap bitmap=compressImage(imgFile.getAbsolutePath());
+            imageView.setImageBitmap(myBitmap);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         }
         holdr.card.setOnLongClickListener(new View.OnLongClickListener() {
@@ -108,13 +108,20 @@ public class ItemsAdapter extends RealmRecyclerViewAdapter<Items> {
                                 // Get the book title to show it in toast message
                                 Items b = results.get(position);
                                 String title = b.getName();
-
+                                File fdelete = new File(b.getImgPath());
                                 // All changes to data must happen in a transaction
                                 realm.beginTransaction();
 
                                 // remove single match
                                 results.remove(position);
                                 realm.commitTransaction();
+                                if(fdelete.exists()){
+                                    if (fdelete.delete()) {
+                                        System.out.println("file Deleted");
+                                    } else {
+                                        System.out.println("file not Deleted from sd card");
+                                    }
+                                }
 
                                 if (results.size() == 0) {
                                     Prefs.with(context).setPreLoad(false);
