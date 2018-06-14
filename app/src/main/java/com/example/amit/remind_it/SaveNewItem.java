@@ -1,6 +1,7 @@
 package com.example.amit.remind_it;
 
 import android.Manifest;
+import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -25,6 +26,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.example.amit.remind_it.dao.SampleDataBase;
+import com.example.amit.remind_it.model.ItemModel;
 import com.example.amit.remind_it.model.Items;
 import com.example.amit.remind_it.realm.RealmController;
 
@@ -49,6 +53,7 @@ public class SaveNewItem extends AppCompatActivity {
     EditText locationEditText;
     Realm realm;
     static final int REQUEST_TAKE_PHOTO = 1;
+    SampleDataBase sampleDatabase;
     ArrayList<String> list;
     private static final String TAG = SaveNewItem.class.getSimpleName();
 
@@ -102,6 +107,7 @@ public class SaveNewItem extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save_new_item);
+        sampleDatabase = Room.databaseBuilder(SaveNewItem.this, SampleDataBase.class, "sample-db").build();
         this.realm = RealmController.with(getApplication()).getRealm();
         itemImageView = (ImageView) findViewById(R.id.item_image);
         nameEditText = (EditText) findViewById(R.id.name_edit_text);
@@ -141,9 +147,15 @@ public class SaveNewItem extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ItemModel itemModel = new ItemModel();
                 Items item = new Items();
                 String name = nameEditText.getText().toString();
                 String location = locationEditText.getText().toString();
+                //do in background
+                itemModel.setName(name);
+                itemModel.setLocation(location);
+                itemModel.setImgPath(mCurrentPhotoPath);
+                sampleDatabase.daoAccess().insertOnlySingleRecord(itemModel);
                 item.setId(RealmController.getInstance().getBooks().size() + 1);
                 item.setName(name);
                 item.setLocation(location);
