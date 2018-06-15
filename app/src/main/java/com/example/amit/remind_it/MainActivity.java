@@ -1,5 +1,7 @@
 package com.example.amit.remind_it;
 
+import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -13,46 +15,74 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.amit.remind_it.app.Prefs;
-import com.example.amit.remind_it.model.Items;
-import com.example.amit.remind_it.realm.RealmController;
-import com.example.amit.remind_it.realm.RealmItemsAdapter;
+import com.example.amit.remind_it.dao.SampleDataBase;
+import com.example.amit.remind_it.model.ItemModel;
+//import com.example.amit.remind_it.model.Items;
+//import com.example.amit.remind_it.realm.RealmController;
+//import com.example.amit.remind_it.realm.RealmItemsAdapter;
+import com.nanotasks.BackgroundWork;
+import com.nanotasks.Completion;
+import com.nanotasks.Tasks;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.RealmResults;
+//import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    ItemsAdapter adaptEr;
+    //ItemsAdapter adaptEr;
+    com.example.amit.remind_it.adapter.ItemsAdapter itemsAdapter;
     RecyclerView recyclerView;
     SearchView searchView;
+    SampleDataBase sampleDataBase;
+    List<ItemModel> itemModelList;
     private String searchText=" ";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sampleDataBase = Room.databaseBuilder(MainActivity.this, SampleDataBase.class, "sample-db").build();
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        adaptEr = new ItemsAdapter(this);
-        recyclerView.setAdapter(adaptEr);
+      //  adaptEr = new ItemsAdapter(this);
+        Tasks.executeInBackground(this, new BackgroundWork<Void>() {
+            @Override
+            public Void doInBackground() throws Exception {
+                itemModelList = sampleDataBase.daoAccess().fetchAllData();
+                return null;
+            }
+        }, new Completion<Void>() {
+            @Override
+            public void onSuccess(Context context, Void result) {
+                itemsAdapter = new com.example.amit.remind_it.adapter.ItemsAdapter(MainActivity.this,itemModelList );
+                recyclerView.setAdapter(itemsAdapter);
+            }
+
+            @Override
+            public void onError(Context context, Exception e) {
+                Log.d("Error", "can't read database");
+            }
+        });
+
         if (!Prefs.with(this).getPreLoad()) {
             //  setRealmData();
         }
 
-        RealmController.with(this).refresh();
+       // RealmController.with(this).refresh();
         // get all persisted objects
         // create the helper adapter and notify data set changes
         // changes will be reflected automatically
-        setRealmAdapter(RealmController.with(this).getBooks());
+       // setRealmAdapter(RealmController.with(this).getBooks());
 
      //   searchView = (MaterialSearchView) findViewById(R.id.search_view);
     /*    searchView.setVoiceSearch(false);
@@ -120,20 +150,20 @@ public class MainActivity extends AppCompatActivity
        // Toast.makeText(MainActivity.this,"check",Toast.LENGTH_LONG).show();
     }
 
-    public void setRealmAdapter(RealmResults<Items> books) {
-
-        RealmItemsAdapter realmAdapter = new RealmItemsAdapter(this.getApplicationContext(), books,true);
-        // Set the data and tell the RecyclerView to draw
-        adaptEr.setRealmAdapter(realmAdapter);
-        adaptEr.notifyDataSetChanged();
-    }
+//    public void setRealmAdapter(RealmResults<Items> books) {
+//
+//        RealmItemsAdapter realmAdapter = new RealmItemsAdapter(this.getApplicationContext(), books,true);
+//        // Set the data and tell the RecyclerView to draw
+//        adaptEr.setRealmAdapter(realmAdapter);
+//        adaptEr.notifyDataSetChanged();
+//    }
     @Override
     public void onResume(){
         super.onResume();
-        adaptEr.notifyDataSetChanged();
+        //adaptEr.notifyDataSetChanged();
 
         // scroll the recycler view to bottom
-        recyclerView.scrollToPosition(RealmController.getInstance().getBooks().size() - 1);
+//        recyclerView.scrollToPosition(RealmController.getInstance().getBooks().size() - 1);
         //   itemList.clear();
         //  addDataToList(itemList,null);
         //  adapter.notifyDataSetChanged();
@@ -162,7 +192,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                addDataToList(newText);
+                //addDataToList(newText);
                 return false;
             }
         });
@@ -215,13 +245,13 @@ public class MainActivity extends AppCompatActivity
 
     public void addDataToList( String query){
       //  String path = getFilesDir().getPath();
-        if(query == null) {
-            setRealmAdapter(RealmController.with(this).getBooks());
-        }
-        else {
-               setRealmAdapter(RealmController.with(this).queryedBooks(query));
-
-        }
+//        if(query == null) {
+//            setRealmAdapter(RealmController.with(this).getBooks());
+//        }
+//        else {
+//               setRealmAdapter(RealmController.with(this).queryedBooks(query));
+//
+//        }
 
     }
 

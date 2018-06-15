@@ -32,9 +32,10 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:$room_version"
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
 
-    compile 'io.realm:realm-android:0.82.1'
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
     compile 'com.clarifai:clarifai-api-java:1.2.0'
+
+    compile 'com.fabiendevos:nanotasks:1.1.0'
 
     testCompile 'junit:junit:4.12'
 }
