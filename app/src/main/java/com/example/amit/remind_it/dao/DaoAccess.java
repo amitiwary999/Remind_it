@@ -19,4 +19,7 @@ public interface DaoAccess {
 
     @Query("SELECT * FROM ItemModel")
     List<ItemModel> fetchAllData();
+
+    @Query("DELETE FROM ItemModel WHERE id = :id")
+    void deleteOnlySingleItem(long id);
 }

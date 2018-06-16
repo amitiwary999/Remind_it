@@ -1,6 +1,8 @@
 package com.example.amit.remind_it.adapter;
 
+import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -8,6 +10,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.media.ExifInterface;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,9 +19,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.amit.remind_it.MainActivity;
 import com.example.amit.remind_it.R;
+import com.example.amit.remind_it.app.Prefs;
+import com.example.amit.remind_it.dao.SampleDataBase;
 import com.example.amit.remind_it.model.ItemModel;
+import com.nanotasks.BackgroundWork;
+import com.nanotasks.Completion;
+import com.nanotasks.Tasks;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -33,6 +43,8 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
     Context context;
     List<ItemModel> itemModelList;
+    SampleDataBase sampleDataBase;
+    File fdelete;
     public ItemsAdapter(Context context, List<ItemModel> itemModels){
        this.context = context;
        itemModelList = itemModels;
@@ -41,13 +53,14 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        sampleDataBase = Room.databaseBuilder(context, SampleDataBase.class, "sample-db").build();
         View view = LayoutInflater.from(context).inflate(R.layout.items_cards, parent, false);
         ItemViewHolder itemViewHolder = new ItemViewHolder(view);
         return itemViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ItemViewHolder holder, final int position) {
         holder.textName.setText(itemModelList.get(position).getName());
         holder.textLocation.setText(itemModelList.get(position).getLocation());
         File imgFile = new File(itemModelList.get(position).getImgPath());
@@ -60,6 +73,60 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             holder.imageBackground.setImageBitmap(myBitmap);
             holder.imageBackground.setScaleType(ImageView.ScaleType.FIT_XY);
         }
+        holder.card.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setMessage("Are you sure?")
+                        .setCancelable(false)
+                        .setTitle("Delete")
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                fdelete = new File(itemModelList.get(position).getImgPath());
+                               final String title = itemModelList.get(position).getName();
+                                Tasks.executeInBackground(context, new BackgroundWork<Void>() {
+                                    @Override
+                                    public Void doInBackground() throws Exception {
+                                        sampleDataBase.daoAccess().deleteOnlySingleItem(itemModelList.get(position).getId());
+                                        if(fdelete.exists()){
+                                            if (fdelete.delete()) {
+                                                System.out.println("file Deleted");
+                                            } else {
+                                                System.out.println("file not Deleted from sd card");
+                                            }
+                                        }
+                                        return null;
+                                    }
+                                }, new Completion<Void>() {
+                                    @Override
+                                    public void onSuccess(Context context, Void result) {
+                                        itemModelList.remove(position);
+                                        notifyDataSetChanged();
+                                        Toast.makeText(context, title + " is removed from Realm", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void onError(Context context, Exception e) {
+                                        Toast.makeText(context, title + " is not removed from Realm. Some error occurs.", Toast.LENGTH_SHORT).show();
+                                        e.printStackTrace();
+                                    }
+                                });
+
+                            }
+
+                        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                return false;
+            }
+        });
     }
 
     @Override

@@ -154,7 +154,6 @@ public class SaveNewItem extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d("clecked", "done button");
                 itemModel = new ItemModel();
-              //  Items item = new Items();
                 String name = nameEditText.getText().toString();
                 String location = locationEditText.getText().toString();
                 //do in background
@@ -179,23 +178,15 @@ public class SaveNewItem extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 });
-//                item.setId(RealmController.getInstance().getBooks().size() + 1);
-//                item.setName(name);
-//                item.setLocation(location);
-//                item.setImgPath(mCurrentPhotoPath);
-                //  item.setTags(list);
-//                realm.beginTransaction();
-//                realm.copyToRealm(item);
-//                realm.commitTransaction();
-                //    itemsHash.put(item.getItemName(),item);
+
                 Log.d("Data Stored","Hurray");
 
                 Toast toast = Toast.makeText(getApplicationContext(),"Item Saved Successfully!!",Toast.LENGTH_SHORT);
                 toast.show();
                  if(name!=null && location!=null) {
-                     /*Intent intent= new Intent(SaveNewItem.this, MainActivity.class);
+                     Intent intent= new Intent(SaveNewItem.this, MainActivity.class);
                      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK );
-                     startActivity(intent);*/
+                     startActivity(intent);
                      finish();
                  }else{
                      Toast.makeText(getApplicationContext(),"Enter name and location both",Toast.LENGTH_LONG).show();
