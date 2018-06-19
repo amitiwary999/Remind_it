@@ -1,6 +1,8 @@
 package com.example.amit.remind_it;
 
 import android.Manifest;
+import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -25,8 +27,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-import com.example.amit.remind_it.model.Items;
-import com.example.amit.remind_it.realm.RealmController;
+
+import com.example.amit.remind_it.dao.SampleDataBase;
+import com.example.amit.remind_it.model.ItemModel;
+//import com.example.amit.remind_it.model.Items;
+//import com.example.amit.remind_it.realm.RealmController;
+import com.nanotasks.BackgroundWork;
+import com.nanotasks.Completion;
+import com.nanotasks.Tasks;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,7 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import io.realm.Realm;
+//import io.realm.Realm;
 
 /**
  * Created by amit on 29/12/16.
@@ -47,9 +55,11 @@ public class SaveNewItem extends AppCompatActivity {
     ImageView itemImageView;
     EditText nameEditText;
     EditText locationEditText;
-    Realm realm;
+   // Realm realm;
     static final int REQUEST_TAKE_PHOTO = 1;
+    SampleDataBase sampleDatabase;
     ArrayList<String> list;
+    ItemModel itemModel;
     private static final String TAG = SaveNewItem.class.getSimpleName();
 
     private File createImageFile() throws IOException {
@@ -102,7 +112,8 @@ public class SaveNewItem extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save_new_item);
-        this.realm = RealmController.with(getApplication()).getRealm();
+        sampleDatabase = Room.databaseBuilder(SaveNewItem.this, SampleDataBase.class, "sample-db").build();
+       // this.realm = RealmController.with(getApplication()).getRealm();
         itemImageView = (ImageView) findViewById(R.id.item_image);
         nameEditText = (EditText) findViewById(R.id.name_edit_text);
         locationEditText = (EditText) findViewById(R.id.location_edit_text);
@@ -141,26 +152,41 @@ public class SaveNewItem extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Items item = new Items();
+                Log.d("clecked", "done button");
+                itemModel = new ItemModel();
                 String name = nameEditText.getText().toString();
                 String location = locationEditText.getText().toString();
-                item.setId(RealmController.getInstance().getBooks().size() + 1);
-                item.setName(name);
-                item.setLocation(location);
-                item.setImgPath(mCurrentPhotoPath);
-                //  item.setTags(list);
-                realm.beginTransaction();
-                realm.copyToRealm(item);
-                realm.commitTransaction();
-                //    itemsHash.put(item.getItemName(),item);
+                //do in background
+                itemModel.setName(name);
+                itemModel.setLocation(location);
+                itemModel.setImgPath(mCurrentPhotoPath);
+                Tasks.executeInBackground(SaveNewItem.this, new BackgroundWork<Void>() {
+                    @Override
+                    public Void doInBackground() throws Exception {
+                        sampleDatabase.daoAccess().insertOnlySingleRecord(itemModel);
+                        return null;
+                    }
+                }, new Completion<Void>() {
+                    @Override
+                    public void onSuccess(Context context, Void result) {
+                        Log.d("Room Data Stored","Hurray");
+                    }
+
+                    @Override
+                    public void onError(Context context, Exception e) {
+                        Log.d("Room Data Stored","Fail ");
+                        e.printStackTrace();
+                    }
+                });
+
                 Log.d("Data Stored","Hurray");
 
                 Toast toast = Toast.makeText(getApplicationContext(),"Item Saved Successfully!!",Toast.LENGTH_SHORT);
                 toast.show();
                  if(name!=null && location!=null) {
-                     /*Intent intent= new Intent(SaveNewItem.this, MainActivity.class);
+                     Intent intent= new Intent(SaveNewItem.this, MainActivity.class);
                      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK );
-                     startActivity(intent);*/
+                     startActivity(intent);
                      finish();
                  }else{
                      Toast.makeText(getApplicationContext(),"Enter name and location both",Toast.LENGTH_LONG).show();
